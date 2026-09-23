@@ -1,0 +1,2804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pop Carty | Admin Control Center</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    
+    <link rel="icon" type="image/png" href="/assets/popcarty_logo.png">
+
+    <!-- Google Model Viewer (3D Web Component) -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+
+    <style>
+        :root {
+            --pop-pink: #ff5388;
+            --pop-pink-hover: #ff3b77;
+            --pop-pink-soft: rgba(255, 83, 136, 0.10);
+            --pop-pink-glow: rgba(255, 83, 136, 0.25);
+            --pop-lavender: #b070f8;
+            
+            --bg-body: #f8fafc;
+            --bg-sidebar: #0f172a;
+            --bg-card: #ffffff;
+            --border-color: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            
+            --success: #10b981;
+            --success-bg: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-bg: #fffbeb;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --info: #0284c7;
+            --info-bg: #f0f9ff;
+            
+            --radius-md: 12px;
+            --radius-lg: 18px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 20px -2px rgba(0,0,0,0.06);
+            --shadow-pop: 0 10px 25px -5px rgba(255, 83, 136, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* LOGIN SCREEN MODAL OVERLAY */
+        #loginGate {
+            position: fixed;
+            inset: 0;
+            background: #ffffff;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 440px;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 40px 32px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .login-logo {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            margin-bottom: 16px;
+        }
+
+        .login-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
+        .login-sub {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 28px;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 0.95rem;
+            border: 1.5px solid var(--border-color);
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--pop-pink);
+            box-shadow: 0 0 0 3px var(--pop-pink-soft);
+        }
+
+        .btn-pop {
+            width: 100%;
+            padding: 13px;
+            background: var(--pop-pink);
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-pop);
+            transition: all 0.2s ease;
+        }
+
+        .btn-pop:hover {
+            background: var(--pop-pink-hover);
+            transform: translateY(-1px);
+        }
+
+        .demo-cred-btn {
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 0.8rem;
+            border: 1px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            margin-top: 18px;
+            display: inline-block;
+        }
+
+        .demo-cred-btn:hover {
+            background: #e2e8f0;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-sidebar);
+            color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 1000;
+            transition: width 0.3s ease;
+        }
+
+        .sidebar-brand {
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .sidebar-logo {
+            width: 38px;
+            height: 38px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: #ffffff;
+            padding: 3px;
+        }
+
+        .sidebar-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #ffffff;
+        }
+
+        .sidebar-badge {
+            background: var(--pop-pink);
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-weight: 700;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .menu-item button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            border-radius: 10px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+
+        .menu-item button:hover {
+            background: rgba(255,255,255,0.06);
+            color: #ffffff;
+        }
+
+        .menu-item.active button {
+            background: var(--pop-pink);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(255, 83, 136, 0.4);
+        }
+
+        .sidebar-footer {
+            padding: 18px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--pop-pink);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        /* MAIN CONTENT AREA */
+        .main-wrapper {
+            margin-left: 260px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* TOPBAR */
+        .topbar {
+            height: 70px;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 500;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-heading {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-view-store {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-view-store:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .btn-logout {
+            background: #fef2f2;
+            color: #ef4444;
+            border: 1px solid #fee2e2;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: #ef4444;
+            color: #ffffff;
+        }
+
+        /* PAGE CONTAINER */
+        .content-body {
+            padding: 32px;
+            flex: 1;
+        }
+
+        .section-view {
+            display: none;
+        }
+
+        .section-view.active {
+            display: block;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* METRIC CARDS GRID */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 22px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: #cbd5e1;
+        }
+
+        .stat-val {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-top: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .stat-icon.pink { background: var(--pop-pink-soft); color: var(--pop-pink); }
+        .stat-icon.green { background: var(--success-bg); color: var(--success); }
+        .stat-icon.amber { background: var(--warning-bg); color: var(--warning); }
+        .stat-icon.blue { background: var(--info-bg); color: var(--info); }
+        .stat-icon.red { background: var(--danger-bg); color: var(--danger); }
+
+        /* DATA TABLES & CARDS */
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .panel-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .panel-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 14px 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 16px 20px;
+            font-size: 0.88rem;
+            color: #1e293b;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background: #f8fafc;
+        }
+
+        /* STATUS BADGES */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .badge-success { background: var(--success-bg); color: var(--success); }
+        .badge-warning { background: var(--warning-bg); color: var(--warning); }
+        .badge-danger { background: var(--danger-bg); color: var(--danger); }
+        .badge-info { background: var(--info-bg); color: var(--info); }
+        .badge-pop { background: var(--pop-pink-soft); color: var(--pop-pink); }
+
+        /* BUTTONS */
+        .btn-sm {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--pop-pink);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: var(--pop-pink-hover);
+        }
+
+        .btn-outline {
+            background: #ffffff;
+            border-color: #cbd5e1;
+            color: #334155;
+        }
+
+        .btn-outline:hover {
+            background: #f1f5f9;
+        }
+
+        /* PRODUCT ROW THUMB */
+        .table-prod-thumb {
+            width: 44px;
+            height: 44px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+        }
+
+        /* MODAL STYLES */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 640px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            animation: modalPop 0.2s ease-out;
+        }
+
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            background: #f8fafc;
+        }
+
+        /* ORDER DETAILS VIEW */
+        .order-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .detail-block {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .detail-block h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-block p {
+            font-size: 0.88rem;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+
+        .status-update-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        /* ===== IMAGE UPLOAD COMPONENT ===== */
+        .image-upload-section {
+            margin-bottom: 4px;
+        }
+
+        .image-upload-section > label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 8px;
+        }
+
+        .image-dropzone {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 28px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            background: #f8fafc;
+            position: relative;
+        }
+
+        .image-dropzone:hover,
+        .image-dropzone.drag-over {
+            border-color: var(--pop-pink);
+            background: rgba(255, 83, 136, 0.04);
+            box-shadow: 0 0 0 4px var(--pop-pink-soft);
+        }
+
+        .image-dropzone.drag-over {
+            transform: scale(1.01);
+        }
+
+        .dropzone-icon {
+            font-size: 2rem;
+            margin-bottom: 6px;
+            display: block;
+            opacity: 0.6;
+        }
+
+        .dropzone-text {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .dropzone-text strong {
+            color: var(--pop-pink);
+        }
+
+        .dropzone-text .or-divider {
+            display: block;
+            color: #94a3b8;
+            font-size: 0.78rem;
+            margin: 4px 0;
+        }
+
+        .btn-choose-files {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 18px;
+            background: var(--pop-pink);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(255, 83, 136, 0.3);
+        }
+
+        .btn-choose-files:hover {
+            background: var(--pop-pink-hover);
+            transform: translateY(-1px);
+        }
+
+        .dropzone-hint {
+            font-size: 0.72rem;
+            color: #94a3b8;
+            margin-top: 10px;
+        }
+
+        /* Preview Grid */
+        .image-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .image-preview-card {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #e2e8f0;
+            background: #ffffff;
+            aspect-ratio: 1;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+
+        .image-preview-card:hover {
+            border-color: #94a3b8;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .image-preview-card.is-main {
+            border-color: var(--pop-pink);
+            box-shadow: 0 0 0 3px var(--pop-pink-soft), 0 4px 12px rgba(255, 83, 136, 0.15);
+        }
+
+        .image-preview-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .image-preview-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 8px;
+            gap: 6px;
+        }
+
+        .image-preview-card:hover .image-preview-overlay {
+            opacity: 1;
+        }
+
+        .preview-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .preview-btn-remove {
+            background: rgba(239, 68, 68, 0.9);
+            color: #fff;
+        }
+
+        .preview-btn-remove:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+
+        .preview-btn-star {
+            background: rgba(255, 255, 255, 0.9);
+            color: #94a3b8;
+        }
+
+        .preview-btn-star:hover,
+        .preview-btn-star.active {
+            background: #fbbf24;
+            color: #ffffff;
+        }
+
+        .main-badge {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            background: var(--pop-pink);
+            color: #fff;
+            font-size: 0.62rem;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 5px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Upload progress */
+        .upload-progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 0 0 10px 10px;
+            overflow: hidden;
+        }
+
+        .upload-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--pop-pink), var(--pop-lavender));
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .image-preview-card.uploading {
+            opacity: 0.7;
+        }
+
+        .image-preview-card.uploading img {
+            filter: blur(1px);
+        }
+
+        .upload-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: var(--pop-pink);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .upload-error-toast {
+            background: #fef2f2;
+            border: 1px solid #fee2e2;
+            color: #dc2626;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .upload-error-toast.show {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        /* ================= 3D MODEL STUDIO STYLES ================= */
+        .studio-3d-card {
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 18px;
+            margin-top: 14px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            transition: border-color 0.2s;
+        }
+
+        .studio-3d-card:hover {
+            border-color: #cbd5e1;
+        }
+
+        .studio-3d-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .studio-3d-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .studio-3d-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.3px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .studio-3d-badge.ready {
+            background: #ecfdf5;
+            color: #059669;
+            border: 1px solid #a7f3d0;
+        }
+
+        .studio-3d-badge.generating {
+            background: #fffbeb;
+            color: #d97706;
+            border: 1px solid #fde68a;
+            animation: pulse-amber 1.5s infinite;
+        }
+
+        .studio-3d-badge.none {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .studio-3d-badge.failed {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        @keyframes pulse-amber {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .studio-3d-viewer-container {
+            width: 100%;
+            height: 250px;
+            background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .studio-3d-viewer-container model-viewer {
+            width: 100%;
+            height: 100%;
+            --poster-color: transparent;
+        }
+
+        .studio-3d-empty {
+            text-align: center;
+            padding: 24px;
+            color: #64748b;
+        }
+
+        .studio-3d-empty-icon {
+            font-size: 2.4rem;
+            margin-bottom: 8px;
+            display: block;
+            opacity: 0.7;
+        }
+
+        .studio-3d-empty-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 4px;
+        }
+
+        .studio-3d-empty-desc {
+            font-size: 0.78rem;
+            color: #94a3b8;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        .studio-3d-progress-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        .studio-3d-progress-card.active {
+            display: block;
+        }
+
+        .studio-3d-progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+
+        .studio-3d-progress-track {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .studio-3d-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff5388, #b070f8);
+            width: 0%;
+            transition: width 0.4s ease;
+            border-radius: 6px;
+        }
+
+        .studio-3d-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+            align-items: center;
+        }
+
+        .studio-3d-toggle-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+            padding: 10px 14px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.82rem;
+            color: #1e293b;
+        }
+
+        .studio-3d-meta {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================= 1. SECURE ADMIN LOGIN SCREEN ================= -->
+    <div id="loginGate">
+        <div class="login-box">
+            <img src="/assets/popcarty_logo.png" alt="Pop Carty" class="login-logo">
+            <h2 class="login-title">Admin Control Center</h2>
+            <p class="login-sub">Authorized personnel authentication only</p>
+
+            <form id="adminLoginForm" onsubmit="handleAdminLogin(event)">
+                <div class="form-group">
+                    <label>Admin Email</label>
+                    <input type="email" id="adminEmail" class="form-control" required placeholder="admin@popcarty.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="adminPassword" class="form-control" required placeholder="••••••••">
+                </div>
+                <div id="loginError" style="color: var(--danger); font-size: 0.85rem; margin-bottom: 14px; display: none;"></div>
+                <button type="submit" class="btn-pop">Authenticate & Enter</button>
+            </form>
+
+            <button type="button" class="demo-cred-btn" onclick="fillAdminCredentials()">
+                ⚡ Auto-fill Default Admin Credentials
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= 2. SIDEBAR NAVIGATION ================= -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <img src="/assets/popcarty_logo.png" alt="Pop Carty" class="sidebar-logo">
+            <div>
+                <div class="sidebar-title">Pop Carty</div>
+                <span class="sidebar-badge">ADMIN v2.0</span>
+            </div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="menu-item active" id="menu-dashboard">
+                <button onclick="switchTab('dashboard')">
+                    <span>📊</span>
+                    <span>Dashboard</span>
+                </button>
+            </li>
+            <li class="menu-item" id="menu-products">
+                <button onclick="switchTab('products')">
+                    <span>🛍️</span>
+                    <span>Products</span>
+                </button>
+            </li>
+            <li class="menu-item" id="menu-orders">
+                <button onclick="switchTab('orders')">
+                    <span>📦</span>
+                    <span>Orders</span>
+                </button>
+            </li>
+            <li class="menu-item" id="menu-customers">
+                <button onclick="switchTab('customers')">
+                    <span>👥</span>
+                    <span>Customers</span>
+                </button>
+            </li>
+            <li class="menu-item" id="menu-inventory">
+                <button onclick="switchTab('inventory')">
+                    <span>⚡</span>
+                    <span>Inventory</span>
+                </button>
+            </li>
+            <li class="menu-item" id="menu-audit">
+                <button onclick="switchTab('audit')">
+                    <span>📝</span>
+                    <span>Audit Logs</span>
+                </button>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="admin-profile">
+                <div class="admin-avatar">A</div>
+                <div>
+                    <div style="font-size:0.85rem; font-weight:700;" id="adminUserName">Admin</div>
+                    <div style="font-size:0.75rem; color:#94a3b8;">Super Administrator</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ================= 3. MAIN DASHBOARD CONTENT ================= -->
+    <main class="main-wrapper">
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-heading" id="currentSectionTitle">Dashboard Overview</h1>
+            </div>
+            <div class="topbar-right">
+                <a href="/" target="_blank" class="btn-view-store">
+                    <span>🏪 Customer Website</span>
+                    <span>➔</span>
+                </a>
+                <button class="btn-logout" onclick="adminLogout()">Log Out</button>
+            </div>
+        </header>
+
+        <div class="content-body">
+            
+            <!-- SECTION 1: DASHBOARD STATS -->
+            <section id="section-dashboard" class="section-view active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-label">Total Sales</div>
+                            <div class="stat-val" id="statTotalSales">0 SAR</div>
+                        </div>
+                        <div class="stat-icon green">💰</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-label">Total Orders</div>
+                            <div class="stat-val" id="statTotalOrders">0</div>
+                        </div>
+                        <div class="stat-icon pink">📦</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-label">Pending Orders</div>
+                            <div class="stat-val" id="statPendingOrders">0</div>
+                        </div>
+                        <div class="stat-icon amber">⏳</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-label">Completed Orders</div>
+                            <div class="stat-val" id="statCompletedOrders">0</div>
+                        </div>
+                        <div class="stat-icon green">✔</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-label">Total Products</div>
+                            <div class="stat-val" id="statTotalProducts">0</div>
+                        </div>
+                        <div class="stat-icon blue">🏷️</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-label">Total Customers</div>
+                            <div class="stat-val" id="statTotalCustomers">0</div>
+                        </div>
+                        <div class="stat-icon pink">👥</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-label">Low Stock Alerts</div>
+                            <div class="stat-val" id="statLowStock">0</div>
+                        </div>
+                        <div class="stat-icon red">⚠️</div>
+                    </div>
+                    <div class="stat-card">
+                        <div>
+                            <div class="stat-label">Cancelled Orders</div>
+                            <div class="stat-val" id="statCancelledOrders">0</div>
+                        </div>
+                        <div class="stat-icon red">✖</div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders Table -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">Recent Customer Orders</div>
+                        <button class="btn-sm btn-outline" onclick="switchTab('orders')">View All Orders ➔</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Total Amount</th>
+                                    <th>Status</th>
+                                    <th>Payment</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentOrdersTableBody">
+                                <tr><td colspan="7" style="text-align:center;">Loading orders...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: PRODUCTS MANAGEMENT -->
+            <section id="section-products" class="section-view">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">Catalog Inventory & Management</div>
+                        <div class="panel-actions">
+                            <input type="text" id="productSearchInput" class="form-control" style="width:240px; padding:8px 12px;" placeholder="Search product or SKU..." oninput="loadProducts()">
+                            <button class="btn-sm btn-primary" onclick="openAddProductModal()">+ Add New Product</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Photo</th>
+                                    <th>Product Name</th>
+                                    <th>SKU</th>
+                                    <th>Category</th>
+                                    <th>Price (SAR)</th>
+                                    <th>Stock</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTableBody">
+                                <tr><td colspan="8" style="text-align:center;">Loading products...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: ORDERS MANAGEMENT -->
+            <section id="section-orders" class="section-view">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">Customer Orders Registry</div>
+                        <div class="panel-actions">
+                            <input type="text" id="orderSearchInput" class="form-control" style="width:220px; padding:8px 12px;" placeholder="Search Order # or Name..." oninput="loadOrders()">
+                            <select id="orderStatusFilter" class="form-control" style="width:160px; padding:8px 12px;" onchange="loadOrders()">
+                                <option value="all">All Statuses</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Confirmed">Confirmed</option>
+                                <option value="Processing">Processing</option>
+                                <option value="Packed">Packed</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Out for Delivery">Out for Delivery</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Payment</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTableBody">
+                                <tr><td colspan="8" style="text-align:center;">Loading orders...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: CUSTOMERS MANAGEMENT -->
+            <section id="section-customers" class="section-view">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">Registered Customer Database</div>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Joined Date</th>
+                                    <th>Total Orders</th>
+                                    <th>Lifetime Spend</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customersTableBody">
+                                <tr><td colspan="7" style="text-align:center;">Loading customer database...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5: INVENTORY MONITOR -->
+            <section id="section-inventory" class="section-view">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">Real-time Stock Monitor</div>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>SKU</th>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th>Current Stock</th>
+                                    <th>Level Status</th>
+                                    <th>Unit Price</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryTableBody">
+                                <tr><td colspan="6" style="text-align:center;">Loading inventory...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 6: AUDIT LOGS -->
+            <section id="section-audit" class="section-view">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">System & Admin Audit Logs</div>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Action</th>
+                                    <th>Entity</th>
+                                    <th>Target ID</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditTableBody">
+                                <tr><td colspan="5" style="text-align:center;">Loading audit trail...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- ================= MODAL: ADD / EDIT PRODUCT ================= -->
+    <div id="productModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="productModalTitle" style="font-weight:800;">Add New Product</h3>
+                <button onclick="closeProductModal()" style="background:none; border:none; font-size:1.4rem; cursor:pointer;">&times;</button>
+            </div>
+            <form id="productForm" onsubmit="handleSaveProduct(event)">
+                <div class="modal-body">
+                    <input type="hidden" id="editProductId">
+                    <div class="form-group">
+                        <label>Product Name *</label>
+                        <input type="text" id="pName" class="form-control" required placeholder="e.g. Apple AirPods Pro 2">
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                        <div class="form-group">
+                            <label>SKU Code *</label>
+                            <input type="text" id="pSKU" class="form-control" required placeholder="POP-AIR-PRO2">
+                        </div>
+                        <div class="form-group">
+                            <label>Category *</label>
+                            <select id="pCategory" class="form-control" required>
+                                <option value="audio">Spatial Audio</option>
+                                <option value="watch">Smartwatches</option>
+                                <option value="phone">Smart Devices</option>
+                                <option value="ambient">Lifestyle Gear</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;">
+                        <div class="form-group">
+                            <label>Price (SAR) *</label>
+                            <input type="number" step="0.01" id="pPrice" class="form-control" required placeholder="249.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Discount Price</label>
+                            <input type="number" step="0.01" id="pDiscountPrice" class="form-control" placeholder="189.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Inventory Stock *</label>
+                            <input type="number" id="pStock" class="form-control" required placeholder="15">
+                        </div>
+                    </div>
+                    <div class="image-upload-section" id="imageUploadSection">
+                        <label>Product Images</label>
+                        <input type="file" id="imageFileInput" multiple accept=".jpg,.jpeg,.png,.webp" style="display:none;" onchange="handleFileInputChange(event)">
+                        <div class="image-dropzone" id="imageDropzone"
+                             ondragenter="handleDragEnter(event)"
+                             ondragover="handleDragOver(event)"
+                             ondragleave="handleDragLeave(event)"
+                             ondrop="handleDrop(event)"
+                             onclick="document.getElementById('imageFileInput').click()">
+                            <span class="dropzone-icon">📸</span>
+                            <div class="dropzone-text">
+                                <strong>Drag & drop images here</strong>
+                                <span class="or-divider">— or —</span>
+                            </div>
+                            <button type="button" class="btn-choose-files" onclick="event.stopPropagation(); document.getElementById('imageFileInput').click();">
+                                📁 Choose Files
+                            </button>
+                            <div class="dropzone-hint">JPG, JPEG, PNG, WEBP • Max 5 MB per image</div>
+                        </div>
+                        <div class="image-preview-grid" id="imagePreviewGrid"></div>
+                        <div class="upload-error-toast" id="uploadErrorToast"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="pDesc" class="form-control" rows="3" placeholder="Commercial product description..."></textarea>
+                    </div>
+                    <!-- Hidden 3D State Inputs -->
+                    <input type="hidden" id="pGlbUrl">
+                    <input type="hidden" id="pStatus3d" value="none">
+
+                    <!-- AI 3D Model Studio Section -->
+                    <div class="studio-3d-card" id="studio3dCard">
+                        <div class="studio-3d-header">
+                            <div class="studio-3d-title">
+                                <span>🧊 AI Image-to-3D Studio</span>
+                            </div>
+                            <span class="studio-3d-badge none" id="studio3dBadge">No 3D Model</span>
+                        </div>
+
+                        <!-- 3D Interactive Viewer / Empty State -->
+                        <div class="studio-3d-viewer-container" id="studio3dViewerBox">
+                            <div class="studio-3d-empty" id="studio3dEmpty">
+                                <span class="studio-3d-empty-icon">🧊</span>
+                                <div class="studio-3d-empty-title">No 3D Model Attached</div>
+                                <div class="studio-3d-empty-desc">Upload product images above, then click "Generate AI 3D" to synthesize a realistic web-ready .GLB model.</div>
+                            </div>
+                        </div>
+
+                        <!-- Real-time Generation Progress Card -->
+                        <div class="studio-3d-progress-card" id="studio3dProgressCard">
+                            <div class="studio-3d-progress-label">
+                                <span id="studio3dProgressText">Generating 3D model with AI...</span>
+                                <span id="studio3dProgressPercent">0%</span>
+                            </div>
+                            <div class="studio-3d-progress-track">
+                                <div class="studio-3d-progress-fill" id="studio3dProgressFill"></div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="studio-3d-actions">
+                            <button type="button" class="btn-sm btn-primary" id="btnGenerate3d" onclick="trigger3dGeneration()">
+                                ⚡ Generate 3D from Existing Image
+                            </button>
+                            <label class="btn-sm btn-outline" style="cursor:pointer; margin-bottom:0;" title="Upload custom .GLB model file">
+                                📁 Upload .GLB
+                                <input type="file" id="manualGlbFileInput" accept=".glb" style="display:none;" onchange="handleManualGlbUpload(event)">
+                            </label>
+                            <button type="button" class="btn-sm" style="color:var(--danger); border:1px solid #fecaca; background:#fff1f2; display:none;" id="btnDelete3d" onclick="remove3dModel()">
+                                🗑️ Remove 3D
+                            </button>
+                        </div>
+
+                        <!-- Auto Generate 3D Setting Toggle -->
+                        <div class="studio-3d-toggle-box" style="margin-top:8px;">
+                            <input type="checkbox" id="settingAuto3d" onchange="toggleAuto3dSetting(this.checked)">
+                            <label for="settingAuto3d" style="cursor:pointer; margin-bottom:0; font-weight:600;">
+                                Auto Generate 3D
+                            </label>
+                            <span style="color:#64748b; font-size:0.75rem; margin-left:auto;">(Automatically generates real GLB on image upload)</span>
+                        </div>
+
+                        <!-- Customer Store Display Toggle -->
+                        <div class="studio-3d-toggle-box">
+                            <input type="checkbox" id="pEnable3d" onchange="handle3dToggleChange(this.checked)">
+                            <label for="pEnable3d" style="cursor:pointer; margin-bottom:0; font-weight:600;">
+                                Enable 3D Viewer on Customer Store
+                            </label>
+                            <span style="color:#64748b; font-size:0.75rem; margin-left:auto;">(360° rotation & zoom)</span>
+                        </div>
+
+                        <!-- Metadata info -->
+                        <div class="studio-3d-meta" id="studio3dMeta" style="display:none;">
+                            <span id="studio3dMetaPath"></span>
+                            <span id="studio3dMetaSize"></span>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="pModel3d" value="auto">
+                    <div style="display:flex; gap:20px; flex-wrap:wrap;">
+                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                            <input type="checkbox" id="pActive" checked> <strong>Active on Store</strong>
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                            <input type="checkbox" id="pFeatured"> Featured Drop
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                            <input type="checkbox" id="pBestseller"> Bestseller
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-sm btn-outline" onclick="closeProductModal()">Cancel</button>
+                    <button type="submit" class="btn-sm btn-primary">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: ORDER DETAILS & STATUS TRACKER ================= -->
+    <div id="orderDetailsModal" class="modal-overlay">
+        <div class="modal-card" style="max-width:760px;">
+            <div class="modal-header">
+                <div>
+                    <h3 id="modalOrderNumber" style="font-weight:800; color:var(--pop-pink);">Order Details</h3>
+                    <div id="modalOrderDate" style="font-size:0.8rem; color:var(--text-muted);">Date & Time</div>
+                </div>
+                <button onclick="closeOrderModal()" style="background:none; border:none; font-size:1.4rem; cursor:pointer;">&times;</button>
+            </div>
+            <div class="modal-body" id="modalOrderBody">
+                <!-- Dynamically loaded order inspection details -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-sm btn-outline" onclick="closeOrderModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        const API_BASE = '/api';
+        let adminToken = localStorage.getItem('popcarty_admin_token') || null;
+
+        // Auto-check authentication on load
+        window.addEventListener('DOMContentLoaded', () => {
+            if (adminToken) {
+                verifyAdminSession();
+            } else {
+                document.getElementById('loginGate').style.display = 'flex';
+            }
+        });
+
+        function fillAdminCredentials() {
+            document.getElementById('adminEmail').value = 'admin@popcarty.com';
+            document.getElementById('adminPassword').value = 'PopCarty@2026!';
+        }
+
+        async function handleAdminLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            const errDiv = document.getElementById('loginError');
+
+            try {
+                const res = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+
+                if (!res.ok || !data.success) {
+                    errDiv.innerText = data.error || 'Authentication failed';
+                    errDiv.style.display = 'block';
+                    return;
+                }
+
+                if (data.user.role !== 'admin') {
+                    errDiv.innerText = 'Access denied: User is not an authorized administrator';
+                    errDiv.style.display = 'block';
+                    return;
+                }
+
+                adminToken = data.token;
+                localStorage.setItem('popcarty_admin_token', adminToken);
+                document.getElementById('loginGate').style.display = 'none';
+                document.getElementById('adminUserName').innerText = data.user.name;
+                loadDashboardStats();
+            } catch (err) {
+                errDiv.innerText = 'Connection error to backend server';
+                errDiv.style.display = 'block';
+            }
+        }
+
+        async function verifyAdminSession() {
+            try {
+                const res = await fetch(`${API_BASE}/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+                const data = await res.json();
+                if (res.ok && data.user && data.user.role === 'admin') {
+                    document.getElementById('loginGate').style.display = 'none';
+                    document.getElementById('adminUserName').innerText = data.user.name;
+                    loadDashboardStats();
+                } else {
+                    adminLogout();
+                }
+            } catch {
+                adminLogout();
+            }
+        }
+
+        function adminLogout() {
+            localStorage.removeItem('popcarty_admin_token');
+            adminToken = null;
+            document.getElementById('loginGate').style.display = 'flex';
+        }
+
+        // Tab Navigation
+        function switchTab(tabId) {
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
+
+            const menuItem = document.getElementById(`menu-${tabId}`);
+            const section = document.getElementById(`section-${tabId}`);
+            if (menuItem) menuItem.classList.add('active');
+            if (section) section.classList.add('active');
+
+            const titles = {
+                dashboard: 'Dashboard Overview',
+                products: 'Product Management',
+                orders: 'Customer Orders',
+                customers: 'Customer Accounts',
+                inventory: 'Inventory Monitor',
+                audit: 'System Audit Logs'
+            };
+            document.getElementById('currentSectionTitle').innerText = titles[tabId] || 'Admin Center';
+
+            if (tabId === 'dashboard') loadDashboardStats();
+            if (tabId === 'products') loadProducts();
+            if (tabId === 'orders') loadOrders();
+            if (tabId === 'customers') loadCustomers();
+            if (tabId === 'inventory') loadInventory();
+            if (tabId === 'audit') loadAuditLogs();
+        }
+
+        // 1. Load Dashboard Overview
+        async function loadDashboardStats() {
+            try {
+                const res = await fetch(`${API_BASE}/admin/dashboard`, {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+                const data = await res.json();
+                if (!res.ok) return;
+
+                const { stats, recentOrders } = data;
+                document.getElementById('statTotalSales').innerText = `${stats.totalSales.toLocaleString()} SAR`;
+                document.getElementById('statTotalOrders').innerText = stats.totalOrders;
+                document.getElementById('statPendingOrders').innerText = stats.pendingOrders;
+                document.getElementById('statCompletedOrders').innerText = stats.completedOrders;
+                document.getElementById('statTotalProducts').innerText = stats.totalProducts;
+                document.getElementById('statTotalCustomers').innerText = stats.totalCustomers;
+                document.getElementById('statLowStock').innerText = stats.lowStockProducts;
+                document.getElementById('statCancelledOrders').innerText = stats.cancelledOrders;
+
+                const tbody = document.getElementById('recentOrdersTableBody');
+                if (recentOrders.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No orders recorded yet</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = recentOrders.map(o => `
+                    <tr>
+                        <td><strong>${o.order_number}</strong></td>
+                        <td>${o.customer_name}<br><small style="color:var(--text-muted);">${o.customer_email}</small></td>
+                        <td>${o.order_date}</td>
+                        <td><strong>${o.total_amount} SAR</strong></td>
+                        <td><span class="badge ${getStatusBadge(o.order_status)}">${o.order_status}</span></td>
+                        <td><span class="badge ${o.payment_status === 'Paid' ? 'badge-success' : 'badge-warning'}">${o.payment_status}</span></td>
+                        <td><button class="btn-sm btn-outline" onclick="openOrderDetails(${o.order_id})">Inspect</button></td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function getStatusBadge(status) {
+            switch (status) {
+                case 'Delivered': return 'badge-success';
+                case 'Processing':
+                case 'Packed':
+                case 'Shipped':
+                case 'Out for Delivery': return 'badge-info';
+                case 'Confirmed': return 'badge-pop';
+                case 'Cancelled':
+                case 'Returned': return 'badge-danger';
+                default: return 'badge-warning';
+            }
+        }
+
+        // 2. Load Products
+        async function loadProducts() {
+            const query = document.getElementById('productSearchInput').value;
+            const res = await fetch(`${API_BASE}/admin/products?search=${encodeURIComponent(query)}`, {
+                headers: { 'Authorization': `Bearer ${adminToken}` }
+            });
+            const data = await res.json();
+            const tbody = document.getElementById('productsTableBody');
+
+            if (!data.products || data.products.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">No products found</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = data.products.map(p => `
+                <tr>
+                    <td><img src="${p.thumbnail}" class="table-prod-thumb" alt="${p.product_name}"></td>
+                    <td>
+                        <strong>${p.product_name}</strong><br>
+                        <small style="color:var(--text-muted);">${p.brand || 'Pop Carty'}</small>
+                        ${p.glb_url ? '<br><span class="badge badge-success" style="font-size:0.65rem; padding:2px 6px; margin-top:3px; display:inline-flex; align-items:center; gap:3px;">🧊 3D READY</span>' : ''}
+                    </td>
+                    <td><code>${p.SKU}</code></td>
+                    <td><span class="badge badge-info">${p.category.toUpperCase()}</span></td>
+                    <td><strong>${p.discount_price || p.price} SAR</strong> ${p.discount_price ? `<del style="color:#94a3b8; font-size:0.75rem;">${p.price}</del>` : ''}</td>
+                    <td>
+                        <span class="badge ${p.stock <= 0 ? 'badge-danger' : (p.stock <= 5 ? 'badge-warning' : 'badge-success')}">
+                            ${p.stock} units
+                        </span>
+                    </td>
+                    <td><span class="badge ${p.active ? 'badge-success' : 'badge-danger'}">${p.active ? 'Active' : 'Inactive'}</span></td>
+                    <td>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                            <button class="btn-sm btn-outline" onclick="editProduct(${p.product_id})">Edit</button>
+                            ${p.active
+                                ? `<button class="btn-sm" style="color:var(--danger); border:1px solid #fecaca; background:#fff1f2;" onclick="deactivateProduct(${p.product_id})">Deactivate</button>`
+                                : `<button class="btn-sm" style="color:#059669; border:1px solid #a7f3d0; background:#ecfdf5;" onclick="reactivateProduct(${p.product_id})">Reactivate</button>`
+                            }
+                            <button class="btn-sm" style="color:#64748b; border:1px solid #e2e8f0; background:#f8fafc;" onclick="deleteProductPermanently(${p.product_id})" title="Delete product permanently">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // ===== IMAGE UPLOAD STATE & LOGIC =====
+        let productImages = [];      // Array of { url, isMain, tempId? }
+        let uploadQueue = [];        // Tracks uploads in progress
+
+        function resetImageState() {
+            productImages = [];
+            uploadQueue = [];
+            renderImagePreviews();
+            hideUploadError();
+        }
+
+        function renderImagePreviews() {
+            const grid = document.getElementById('imagePreviewGrid');
+            if (productImages.length === 0) {
+                grid.innerHTML = '';
+                return;
+            }
+
+            grid.innerHTML = productImages.map((img, idx) => {
+                const isUploading = img.uploading;
+                return `
+                    <div class="image-preview-card ${img.isMain ? 'is-main' : ''} ${isUploading ? 'uploading' : ''}" data-idx="${idx}">
+                        <img src="${img.previewUrl || img.url}" alt="Product image ${idx + 1}">
+                        ${img.isMain ? '<span class="main-badge">MAIN</span>' : ''}
+                        ${isUploading ? `
+                            <div class="upload-spinner"></div>
+                            <div class="upload-progress-bar"><div class="upload-progress-fill" style="width:${img.progress || 30}%"></div></div>
+                        ` : `
+                            <div class="image-preview-overlay">
+                                <button type="button" class="preview-btn preview-btn-star ${img.isMain ? 'active' : ''}" title="Set as main image" onclick="event.stopPropagation(); setMainImage(${idx});">★</button>
+                                <button type="button" class="preview-btn preview-btn-remove" title="Remove image" onclick="event.stopPropagation(); removeProductImage(${idx});">✕</button>
+                            </div>
+                        `}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function showUploadError(msg) {
+            const toast = document.getElementById('uploadErrorToast');
+            toast.innerHTML = `⚠️ ${msg}`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 5000);
+        }
+
+        function hideUploadError() {
+            document.getElementById('uploadErrorToast').classList.remove('show');
+        }
+
+        // Drag & Drop handlers
+        function handleDragEnter(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.currentTarget.classList.add('drag-over');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.currentTarget.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.currentTarget.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) processFiles(files);
+        }
+
+        function handleFileInputChange(e) {
+            const files = e.target.files;
+            if (files.length > 0) processFiles(files);
+            e.target.value = ''; // Reset so same file can be re-selected
+        }
+
+        function processFiles(fileList) {
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+            const allowedExts = ['.jpg', '.jpeg', '.png', '.webp'];
+            const maxSize = 5 * 1024 * 1024; // 5MB
+
+            const validFiles = [];
+            const errors = [];
+
+            for (const file of fileList) {
+                const ext = '.' + file.name.split('.').pop().toLowerCase();
+                if (!allowedExts.includes(ext) && !allowedTypes.includes(file.type)) {
+                    errors.push(`"${file.name}": Invalid type. Use JPG, PNG, or WEBP.`);
+                    continue;
+                }
+                if (file.size > maxSize) {
+                    errors.push(`"${file.name}": Too large (${(file.size / 1024 / 1024).toFixed(1)} MB). Max is 5 MB.`);
+                    continue;
+                }
+                validFiles.push(file);
+            }
+
+            if (errors.length > 0) {
+                showUploadError(errors.join(' '));
+            }
+
+            if (validFiles.length > 0) {
+                uploadImagesToServer(validFiles);
+            }
+        }
+
+        async function uploadImagesToServer(files) {
+            // Add temporary preview entries with local blob URLs
+            const tempEntries = [];
+            for (const file of files) {
+                const tempId = 'temp_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+                const previewUrl = URL.createObjectURL(file);
+                const entry = {
+                    url: null,
+                    previewUrl,
+                    isMain: productImages.length === 0 && tempEntries.length === 0,
+                    uploading: true,
+                    progress: 20,
+                    tempId,
+                    file
+                };
+                productImages.push(entry);
+                tempEntries.push(entry);
+            }
+            renderImagePreviews();
+
+            // Upload all files in a single FormData request
+            const formData = new FormData();
+            for (const file of files) {
+                formData.append('images', file, file.name);
+            }
+
+            try {
+                // Simulate progress stages
+                for (const entry of tempEntries) { entry.progress = 50; }
+                renderImagePreviews();
+
+                const response = await fetch(`${API_BASE}/admin/upload`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${adminToken}` },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    // Remove temp entries on failure
+                    for (const entry of tempEntries) {
+                        const idx = productImages.indexOf(entry);
+                        if (idx >= 0) productImages.splice(idx, 1);
+                    }
+                    renderImagePreviews();
+                    showUploadError(data.error || 'Upload failed. Please try again.');
+                    return;
+                }
+
+                // Replace temp entries with real URLs
+                const urls = data.urls || [];
+                for (let i = 0; i < tempEntries.length; i++) {
+                    const entry = tempEntries[i];
+                    if (urls[i]) {
+                        entry.url = urls[i];
+                        entry.previewUrl = urls[i];
+                        entry.uploading = false;
+                        entry.progress = 100;
+                    } else {
+                        // This file wasn't saved (maybe validation error)
+                        const idx = productImages.indexOf(entry);
+                        if (idx >= 0) productImages.splice(idx, 1);
+                    }
+                }
+                renderImagePreviews();
+
+                if (data.errors && data.errors.length > 0) {
+                    showUploadError(data.errors.join(' '));
+                }
+            } catch (err) {
+                for (const entry of tempEntries) {
+                    const idx = productImages.indexOf(entry);
+                    if (idx >= 0) productImages.splice(idx, 1);
+                }
+                renderImagePreviews();
+                showUploadError('Network error during upload. Please try again.');
+            }
+        }
+
+        async function removeProductImage(idx) {
+            const img = productImages[idx];
+            if (!img) return;
+
+            // If it's an uploaded file (in /uploads/), delete from server
+            if (img.url && img.url.startsWith('/assets/products/uploads/')) {
+                try {
+                    await fetch(`${API_BASE}/admin/upload`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${adminToken}`
+                        },
+                        body: JSON.stringify({ url: img.url })
+                    });
+                } catch (err) {
+                    console.warn('Failed to delete image from server:', err);
+                }
+            }
+
+            const wasMain = img.isMain;
+            productImages.splice(idx, 1);
+
+            // If removed image was main, set first remaining as main
+            if (wasMain && productImages.length > 0) {
+                productImages[0].isMain = true;
+            }
+
+            renderImagePreviews();
+        }
+
+        function setMainImage(idx) {
+            productImages.forEach((img, i) => { img.isMain = (i === idx); });
+            renderImagePreviews();
+        }
+
+        function broadcastCatalogChange() {
+            try {
+                if (window.BroadcastChannel) {
+                    const bc = new BroadcastChannel('popcarty_channel');
+                    bc.postMessage({ type: 'PRODUCTS_UPDATED', timestamp: Date.now() });
+                }
+                localStorage.setItem('popcarty_last_product_update', Date.now().toString());
+            } catch (err) {
+                console.warn('Broadcast notice failed:', err);
+            }
+        }
+
+        // ===== 3D STUDIO STATE & CONTROLS =====
+        let current3dPollInterval = null;
+
+        function reset3dStudio() {
+            if (current3dPollInterval) {
+                clearInterval(current3dPollInterval);
+                current3dPollInterval = null;
+            }
+            document.getElementById('pGlbUrl').value = '';
+            document.getElementById('pStatus3d').value = 'none';
+            document.getElementById('pEnable3d').checked = false;
+            hide3dProgress();
+            update3dStudioUI();
+        }
+
+        function init3dStudio(product) {
+            if (current3dPollInterval) {
+                clearInterval(current3dPollInterval);
+                current3dPollInterval = null;
+            }
+            document.getElementById('pGlbUrl').value = product.glb_url || '';
+            document.getElementById('pStatus3d').value = product.generation_status_3d || 'none';
+            document.getElementById('pEnable3d').checked = !!product.enable_3d;
+
+            hide3dProgress();
+            update3dStudioUI();
+
+            initAuto3dSetting();
+
+            const status = product.generation_status_3d;
+            if (['preparing', 'uploading', 'submitted', 'generating', 'texturing', 'downloading', 'validating'].includes(status)) {
+                start3dPolling(product.product_id);
+            }
+        }
+
+        async function initAuto3dSetting() {
+            try {
+                const res = await fetch(`${API_BASE}/admin/settings/auto-generate-3d`, {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+                const data = await res.json();
+                const chk = document.getElementById('settingAuto3d');
+                if (chk) chk.checked = !!data.enabled;
+            } catch(e) {}
+        }
+
+        async function toggleAuto3dSetting(enabled) {
+            try {
+                await fetch(`${API_BASE}/admin/settings/auto-generate-3d`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminToken}`
+                    },
+                    body: JSON.stringify({ enabled })
+                });
+            } catch(e) {}
+        }
+
+        function update3dStudioUI() {
+            const glbUrl = document.getElementById('pGlbUrl').value;
+            const status = document.getElementById('pStatus3d').value;
+
+            const badge = document.getElementById('studio3dBadge');
+            const viewerBox = document.getElementById('studio3dViewerBox');
+            const btnGenerate = document.getElementById('btnGenerate3d');
+            const btnDelete = document.getElementById('btnDelete3d');
+            const metaBox = document.getElementById('studio3dMeta');
+            const metaPath = document.getElementById('studio3dMetaPath');
+            const metaSize = document.getElementById('studio3dMetaSize');
+
+            // 1. Update Badge
+            badge.className = 'studio-3d-badge';
+            if (status === 'ready') {
+                badge.classList.add('ready');
+                badge.innerHTML = '✨ 3D Model Ready';
+            } else if (['preparing', 'uploading', 'submitted', 'generating', 'texturing', 'downloading', 'validating'].includes(status)) {
+                badge.classList.add('generating');
+                badge.innerHTML = '⏳ Generating...';
+            } else if (status === 'failed') {
+                badge.classList.add('failed');
+                badge.innerHTML = '⚠️ Generation Failed';
+            } else {
+                badge.classList.add('none');
+                badge.innerHTML = 'No 3D Model';
+            }
+
+            // 2. Update Viewer Box
+            if (glbUrl && status === 'ready') {
+                viewerBox.innerHTML = `
+                    <model-viewer id="adminModelViewer"
+                        src="${glbUrl}"
+                        auto-rotate
+                        camera-controls
+                        shadow-intensity="1"
+                        shadow-softness="0.8"
+                        exposure="1"
+                        ar
+                        interaction-prompt="auto"
+                        style="width:100%; height:100%;">
+                    </model-viewer>
+                `;
+                btnGenerate.innerText = '🔄 Regenerate 3D from Existing Image';
+                btnDelete.style.display = 'inline-block';
+
+                metaBox.style.display = 'flex';
+                metaPath.innerHTML = `Model: <code>${glbUrl.split('/').pop()}</code>`;
+                metaSize.innerHTML = `Format: <strong>GLB (glTF 2.0 Binary)</strong>`;
+            } else {
+                viewerBox.innerHTML = `
+                    <div class="studio-3d-empty" id="studio3dEmpty">
+                        <span class="studio-3d-empty-icon">🧊</span>
+                        <div class="studio-3d-empty-title">No 3D Model Attached</div>
+                        <div class="studio-3d-empty-desc">Click "Generate 3D from Existing Image" to automatically synthesize a realistic AI .GLB model from the stored product image.</div>
+                    </div>
+                `;
+                btnGenerate.innerText = '⚡ Generate 3D from Existing Image';
+                btnDelete.style.display = 'none';
+                metaBox.style.display = 'none';
+            }
+        }
+
+        function show3dProgress(percent, text) {
+            const card = document.getElementById('studio3dProgressCard');
+            const fill = document.getElementById('studio3dProgressFill');
+            const label = document.getElementById('studio3dProgressText');
+            const pText = document.getElementById('studio3dProgressPercent');
+
+            card.classList.add('active');
+            fill.style.width = `${percent}%`;
+            label.innerText = text;
+            pText.innerText = `${percent}%`;
+        }
+
+        function hide3dProgress() {
+            document.getElementById('studio3dProgressCard').classList.remove('active');
+        }
+
+        async function trigger3dGeneration() {
+            const productId = document.getElementById('editProductId').value;
+            if (!productId) {
+                alert('Please save the product first before generating a 3D model.');
+                return;
+            }
+
+            const btn = document.getElementById('btnGenerate3d');
+            btn.disabled = true;
+
+            show3dProgress(10, 'Preparing image...');
+
+            try {
+                // Gather product images if present in preview slots
+                const images = productImages.map(img => img.url).filter(Boolean);
+
+                const res = await fetch(`${API_BASE}/admin/products/${productId}/generate-3d`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminToken}`
+                    },
+                    body: JSON.stringify({
+                        image_paths: images.length > 0 ? images : undefined
+                    })
+                });
+
+                const data = await res.json();
+                if (!res.ok) {
+                    const errMsg = data.error || data.message || 'AI 3D generation requires a Meshy API key.';
+                    show3dProgress(0, `⚠️ ${errMsg}`);
+                    document.getElementById('pStatus3d').value = 'failed';
+                    update3dStudioUI();
+                    alert(errMsg);
+                    btn.disabled = false;
+                    return;
+                }
+
+                start3dPolling(productId);
+            } catch (err) {
+                show3dProgress(0, `⚠️ ${err.message}`);
+                alert('3D Generation Error: ' + err.message);
+                btn.disabled = false;
+            }
+        }
+
+        function start3dPolling(productId) {
+            if (current3dPollInterval) clearInterval(current3dPollInterval);
+
+            current3dPollInterval = setInterval(async () => {
+                try {
+                    const res = await fetch(`${API_BASE}/admin/products/${productId}/3d-status`, {
+                        headers: { 'Authorization': `Bearer ${adminToken}` }
+                    });
+                    const data = await res.json();
+                    if (!data.success || !data.status) return;
+
+                    const s = data.status;
+                    show3dProgress(s.progress || 30, s.message || 'Processing 3D model...');
+
+                    if (s.status === 'ready') {
+                        clearInterval(current3dPollInterval);
+                        current3dPollInterval = null;
+
+                        document.getElementById('pGlbUrl').value = s.glbUrl || '';
+                        document.getElementById('pStatus3d').value = s.status;
+                        document.getElementById('pEnable3d').checked = true;
+
+                        show3dProgress(100, '3D model ready.');
+                        setTimeout(() => hide3dProgress(), 3000);
+
+                        update3dStudioUI();
+                        document.getElementById('btnGenerate3d').disabled = false;
+                        broadcastCatalogChange();
+                        loadProducts();
+                    } else if (s.status === 'failed') {
+                        clearInterval(current3dPollInterval);
+                        current3dPollInterval = null;
+
+                        document.getElementById('pStatus3d').value = 'failed';
+                        show3dProgress(0, `⚠️ ${s.message || 'AI 3D generation requires a Meshy API key.'}`);
+
+                        update3dStudioUI();
+                        document.getElementById('btnGenerate3d').disabled = false;
+                    }
+                } catch (e) {
+                    console.warn('3D status polling error:', e);
+                }
+            }, 2500);
+        }
+
+        async function handleManualGlbUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const productId = document.getElementById('editProductId').value;
+            if (!productId) {
+                alert('Please save the product first before uploading a 3D model.');
+                event.target.value = '';
+                return;
+            }
+
+            if (!file.name.toLowerCase().endsWith('.glb')) {
+                alert('Only .GLB (Binary glTF) files are supported.');
+                event.target.value = '';
+                return;
+            }
+
+            show3dProgress(40, `Uploading ${file.name}...`);
+
+            const formData = new FormData();
+            formData.append('glb_file', file, file.name);
+
+            try {
+                const res = await fetch(`${API_BASE}/admin/products/${productId}/upload-3d`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${adminToken}` },
+                    body: formData
+                });
+
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    throw new Error(data.error || data.message || 'Upload failed');
+                }
+
+                document.getElementById('pGlbUrl').value = data.glbUrl;
+                document.getElementById('pStatus3d').value = 'ready';
+                document.getElementById('pEnable3d').checked = true;
+
+                show3dProgress(100, 'GLB model uploaded and verified!');
+                setTimeout(() => hide3dProgress(), 2000);
+
+                update3dStudioUI();
+                broadcastCatalogChange();
+                loadProducts();
+            } catch (err) {
+                alert('GLB Upload Error: ' + err.message);
+                hide3dProgress();
+            } finally {
+                event.target.value = '';
+            }
+        }
+
+        async function remove3dModel() {
+            const productId = document.getElementById('editProductId').value;
+            if (!productId) {
+                reset3dStudio();
+                return;
+            }
+
+            if (!confirm('Remove this 3D model? Customers will no longer be able to view it in 3D.')) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/admin/products/${productId}/3d-model`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    reset3dStudio();
+                    broadcastCatalogChange();
+                    loadProducts();
+                } else {
+                    alert(data.error || 'Failed to delete 3D model');
+                }
+            } catch (err) {
+                alert('Error removing 3D model: ' + err.message);
+            }
+        }
+
+        async function handle3dToggleChange(checked) {
+            const productId = document.getElementById('editProductId').value;
+            if (productId) {
+                try {
+                    await fetch(`${API_BASE}/admin/products/${productId}/toggle-3d`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${adminToken}`
+                        },
+                        body: JSON.stringify({ enable_3d: checked })
+                    });
+                    broadcastCatalogChange();
+                } catch (e) {
+                    console.warn('Failed to sync 3D toggle:', e);
+                }
+            }
+        }
+
+        function openAddProductModal() {
+            document.getElementById('editProductId').value = '';
+            document.getElementById('productModalTitle').innerText = 'Add New Product';
+            document.getElementById('productForm').reset();
+            document.getElementById('pModel3d').value = 'auto';
+            document.getElementById('pActive').checked = true;
+            resetImageState();
+            reset3dStudio();
+            document.getElementById('productModal').classList.add('active');
+        }
+
+        async function editProduct(id) {
+            const res = await fetch(`${API_BASE}/admin/products/${id}`, {
+                headers: { 'Authorization': `Bearer ${adminToken}` }
+            });
+            const data = await res.json();
+            if (!data.success || !data.product) {
+                alert(data.error || 'Failed to load product details');
+                return;
+            }
+
+            const p = data.product;
+            document.getElementById('editProductId').value = p.product_id;
+            document.getElementById('productModalTitle').innerText = `Edit: ${p.product_name}`;
+            document.getElementById('pName').value = p.product_name;
+            document.getElementById('pSKU').value = p.SKU;
+            document.getElementById('pCategory').value = p.category;
+            document.getElementById('pPrice').value = p.price;
+            document.getElementById('pDiscountPrice').value = p.discount_price || '';
+            document.getElementById('pStock').value = p.stock;
+            document.getElementById('pDesc').value = p.description || '';
+            document.getElementById('pModel3d').value = p.model_3d || 'auto';
+            document.getElementById('pActive').checked = !!p.active;
+            document.getElementById('pFeatured').checked = !!p.featured;
+            document.getElementById('pBestseller').checked = !!p.bestseller;
+
+            // Load existing images into state
+            resetImageState();
+            const existingImages = p.images || [];
+            const thumbnail = p.thumbnail || '';
+
+            if (existingImages.length > 0) {
+                productImages = existingImages.map(url => ({
+                    url,
+                    previewUrl: url,
+                    isMain: url === thumbnail,
+                    uploading: false
+                }));
+                // Ensure at least one is main
+                if (!productImages.some(img => img.isMain) && productImages.length > 0) {
+                    productImages[0].isMain = true;
+                }
+            } else if (thumbnail) {
+                productImages = [{
+                    url: thumbnail,
+                    previewUrl: thumbnail,
+                    isMain: true,
+                    uploading: false
+                }];
+            }
+
+            renderImagePreviews();
+            init3dStudio(p);
+            document.getElementById('productModal').classList.add('active');
+        }
+
+        function closeProductModal() {
+            if (current3dPollInterval) {
+                clearInterval(current3dPollInterval);
+                current3dPollInterval = null;
+            }
+            document.getElementById('productModal').classList.remove('active');
+        }
+
+        async function handleSaveProduct(e) {
+            e.preventDefault();
+
+            // Check for any uploads still in progress
+            if (productImages.some(img => img.uploading)) {
+                alert('Please wait for all images to finish uploading.');
+                return;
+            }
+
+            // Determine thumbnail (main image) and images array
+            const finishedImages = productImages.filter(img => img.url);
+            const mainImage = finishedImages.find(img => img.isMain);
+            const thumbnail = mainImage ? mainImage.url : (finishedImages.length > 0 ? finishedImages[0].url : '/assets/products/airpods_pro.jpg');
+            const imagesArray = finishedImages.map(img => img.url);
+
+            const id = document.getElementById('editProductId').value;
+            const payload = {
+                product_name: document.getElementById('pName').value,
+                SKU: document.getElementById('pSKU').value,
+                category: document.getElementById('pCategory').value,
+                price: parseFloat(document.getElementById('pPrice').value),
+                discount_price: document.getElementById('pDiscountPrice').value ? parseFloat(document.getElementById('pDiscountPrice').value) : null,
+                stock: parseInt(document.getElementById('pStock').value, 10),
+                thumbnail: thumbnail,
+                images: imagesArray,
+                description: document.getElementById('pDesc').value,
+                model_3d: document.getElementById('pModel3d').value,
+                glb_url: document.getElementById('pGlbUrl').value || null,
+                enable_3d: document.getElementById('pEnable3d').checked ? 1 : 0,
+                generation_status_3d: document.getElementById('pStatus3d').value || 'none',
+                active: document.getElementById('pActive').checked ? 1 : 0,
+                featured: document.getElementById('pFeatured').checked ? 1 : 0,
+                bestseller: document.getElementById('pBestseller').checked ? 1 : 0
+            };
+
+            const url = id ? `${API_BASE}/admin/products/${id}` : `${API_BASE}/admin/products`;
+            const method = id ? 'PUT' : 'POST';
+
+            const res = await fetch(url, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${adminToken}`
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                closeProductModal();
+                broadcastCatalogChange();
+                loadProducts();
+            } else {
+                alert(data.error || 'Failed to save product');
+            }
+        }
+
+        async function deactivateProduct(id) {
+            if (!confirm('Are you sure you want to deactivate this product? It will be hidden from the customer store.')) return;
+            const res = await fetch(`${API_BASE}/admin/products/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${adminToken}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                broadcastCatalogChange();
+                loadProducts();
+            } else {
+                alert(data.error || 'Failed to deactivate product');
+            }
+        }
+
+        async function reactivateProduct(id) {
+            if (!confirm('Reactivate this product and show it on the customer store?')) return;
+            const res = await fetch(`${API_BASE}/admin/products/${id}/reactivate`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${adminToken}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                broadcastCatalogChange();
+                loadProducts();
+            } else {
+                alert(data.error || 'Failed to reactivate product');
+            }
+        }
+
+        async function deleteProductPermanently(id) {
+            if (!confirm('Permanently delete this product from the database? This cannot be undone.')) return;
+            const res = await fetch(`${API_BASE}/admin/products/${id}?permanent=1`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${adminToken}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                broadcastCatalogChange();
+                loadProducts();
+            } else {
+                alert(data.error || 'Failed to delete product');
+            }
+        }
+
+        // 3. Load Orders
+        async function loadOrders() {
+            const search = document.getElementById('orderSearchInput').value;
+            const status = document.getElementById('orderStatusFilter').value;
+
+            const res = await fetch(`${API_BASE}/admin/orders?search=${encodeURIComponent(search)}&status=${status}`, {
+                headers: { 'Authorization': `Bearer ${adminToken}` }
+            });
+            const data = await res.json();
+            const tbody = document.getElementById('ordersTableBody');
+
+            if (!data.orders || data.orders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">No matching orders</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = data.orders.map(o => `
+                <tr>
+                    <td><strong>${o.order_number}</strong></td>
+                    <td>${o.customer_name}<br><small style="color:var(--text-muted);">${o.customer_phone || o.customer_email}</small></td>
+                    <td>${o.order_date}<br><small style="color:var(--text-muted);">${o.order_time}</small></td>
+                    <td>${o.items.length} items</td>
+                    <td><strong>${o.total_amount} SAR</strong></td>
+                    <td><span class="badge ${getStatusBadge(o.order_status)}">${o.order_status}</span></td>
+                    <td><span class="badge ${o.payment_status === 'Paid' ? 'badge-success' : 'badge-warning'}">${o.payment_status}</span></td>
+                    <td><button class="btn-sm btn-primary" onclick="openOrderDetails(${o.order_id})">Details & Update</button></td>
+                </tr>
+            `).join('');
+        }
+
+        async function openOrderDetails(id) {
+            const res = await fetch(`${API_BASE}/admin/orders/${id}`, {
+                headers: { 'Authorization': `Bearer ${adminToken}` }
+            });
+            const data = await res.json();
+            if (!data.success) return;
+
+            const o = data.order;
+            const addr = o.shipping_address;
+
+            document.getElementById('modalOrderNumber').innerText = `Order ${o.order_number}`;
+            document.getElementById('modalOrderDate').innerText = `Placed on ${o.order_date} at ${o.order_time}`;
+
+            const bodyHtml = `
+                <div class="order-detail-grid">
+                    <div class="detail-block">
+                        <h4>Customer Profile</h4>
+                        <p><strong>Name:</strong> ${o.customer_name}</p>
+                        <p><strong>Email:</strong> ${o.customer_email}</p>
+                        <p><strong>Phone:</strong> ${o.customer_phone || 'N/A'}</p>
+                        <p><strong>Customer ID:</strong> #${o.user_id}</p>
+                    </div>
+                    <div class="detail-block">
+                        <h4>Delivery Address (Snapshot)</h4>
+                        <p><strong>Recipient:</strong> ${addr.full_name} (${addr.phone})</p>
+                        <p>${addr.house_name ? addr.house_name + ', ' : ''}${addr.street}, ${addr.city}</p>
+                        <p>${addr.district ? addr.district + ', ' : ''}${addr.state}, ${addr.country} - ${addr.pincode}</p>
+                        ${addr.landmark ? `<p><strong>Landmark:</strong> ${addr.landmark}</p>` : ''}
+                    </div>
+                </div>
+
+                <div class="detail-block" style="margin-bottom:20px;">
+                    <h4>Purchased Products (${o.items.length})</h4>
+                    <table style="margin-top:10px;">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>SKU</th>
+                                <th>Qty</th>
+                                <th>Unit Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${o.items.map(it => `
+                                <tr>
+                                    <td>
+                                        <div style="display:flex; align-items:center; gap:10px;">
+                                            <img src="${it.product_image}" class="table-prod-thumb" alt="">
+                                            <div>
+                                                <strong>${it.product_name}</strong>
+                                                <div style="font-size:0.75rem; color:var(--text-muted);">${it.selected_color || ''} • ${it.selected_variant || ''}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><code>${it.SKU}</code></td>
+                                    <td>${it.quantity}</td>
+                                    <td>${it.unit_price} SAR</td>
+                                    <td><strong>${it.final_price} SAR</strong></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="order-detail-grid">
+                    <div class="detail-block">
+                        <h4>Payment Information</h4>
+                        <p><strong>Method:</strong> ${o.payment_method}</p>
+                        <p><strong>Status:</strong> <span class="badge ${o.payment_status === 'Paid' ? 'badge-success' : 'badge-warning'}">${o.payment_status}</span></p>
+                        <p><strong>Reference / Txn:</strong> <code>${o.payment ? (o.payment.transaction_id || 'N/A') : 'N/A'}</code></p>
+                    </div>
+                    <div class="detail-block">
+                        <h4>Financial Summary</h4>
+                        <p><strong>Subtotal:</strong> ${o.subtotal} SAR</p>
+                        <p><strong>Discount:</strong> -${o.discount} SAR</p>
+                        <p><strong>Delivery:</strong> ${o.delivery_charge} SAR</p>
+                        <p><strong>Tax (VAT 15%):</strong> ${o.tax} SAR</p>
+                        <p style="font-size:1.1rem; font-weight:800; color:var(--pop-pink); margin-top:6px;">
+                            Total: ${o.total_amount} SAR
+                        </p>
+                    </div>
+                </div>
+
+                <div class="status-update-row">
+                    <label style="font-weight:700; font-size:0.9rem;">Update Order Status:</label>
+                    <select id="updateStatusSelect" class="form-control" style="width:200px;">
+                        <option value="Pending" ${o.order_status === 'Pending' ? 'selected' : ''}>Pending</option>
+                        <option value="Confirmed" ${o.order_status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+                        <option value="Processing" ${o.order_status === 'Processing' ? 'selected' : ''}>Processing</option>
+                        <option value="Packed" ${o.order_status === 'Packed' ? 'selected' : ''}>Packed</option>
+                        <option value="Shipped" ${o.order_status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                        <option value="Out for Delivery" ${o.order_status === 'Out for Delivery' ? 'selected' : ''}>Out for Delivery</option>
+                        <option value="Delivered" ${o.order_status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                        <option value="Cancelled" ${o.order_status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                        <option value="Returned" ${o.order_status === 'Returned' ? 'selected' : ''}>Returned</option>
+                        <option value="Refunded" ${o.order_status === 'Refunded' ? 'selected' : ''}>Refunded</option>
+                    </select>
+                    <button class="btn-sm btn-primary" onclick="submitStatusUpdate(${o.order_id})">Apply Status</button>
+                </div>
+            `;
+
+            document.getElementById('modalOrderBody').innerHTML = bodyHtml;
+            document.getElementById('orderDetailsModal').classList.add('active');
+        }
+
+        async function submitStatusUpdate(orderId) {
+            const newStatus = document.getElementById('updateStatusSelect').value;
+            const res = await fetch(`${API_BASE}/admin/orders/${orderId}/status`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${adminToken}`
+                },
+                body: JSON.stringify({ order_status: newStatus })
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert(`Order updated to: ${newStatus}`);
+                closeOrderModal();
+                loadOrders();
+                loadDashboardStats();
+            } else {
+                alert(data.error || 'Failed to update order status');
+            }
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderDetailsModal').classList.remove('active');
+        }
+
+        // 4. Load Customers
+        async function loadCustomers() {
+            const res = await fetch(`${API_BASE}/admin/users`, {
+                headers: { 'Authorization': `Bearer ${adminToken}` }
+            });
+            const data = await res.json();
+            const tbody = document.getElementById('customersTableBody');
+
+            tbody.innerHTML = data.users.map(u => `
+                <tr>
+                    <td><code>#USER-${u.user_id}</code></td>
+                    <td><strong>${u.name}</strong></td>
+                    <td>${u.email}</td>
+                    <td>${u.phone || 'N/A'}</td>
+                    <td>${u.created_at.split(' ')[0]}</td>
+                    <td><span class="badge badge-info">${u.total_orders} Orders</span></td>
+                    <td><strong>${u.total_spent.toLocaleString()} SAR</strong></td>
+                </tr>
+            `).join('');
+        }
+
+        // 5. Load Inventory
+        async function loadInventory() {
+            const res = await fetch(`${API_BASE}/admin/inventory`, {
+                headers: { 'Authorization': `Bearer ${adminToken}` }
+            });
+            const data = await res.json();
+            const tbody = document.getElementById('inventoryTableBody');
+
+            tbody.innerHTML = data.inventory.map(inv => `
+                <tr>
+                    <td><code>${inv.SKU}</code></td>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <img src="${inv.thumbnail}" class="table-prod-thumb" alt="">
+                            <span>${inv.product_name}</span>
+                        </div>
+                    </td>
+                    <td>${inv.category.toUpperCase()}</td>
+                    <td><strong>${inv.stock} units</strong></td>
+                    <td>
+                        <span class="badge ${inv.status === 'In Stock' ? 'badge-success' : (inv.status === 'Low Stock' ? 'badge-warning' : 'badge-danger')}">
+                            ${inv.status}
+                        </span>
+                    </td>
+                    <td>${inv.price} SAR</td>
+                </tr>
+            `).join('');
+        }
+
+        // 6. Load Audit Logs
+        async function loadAuditLogs() {
+            const res = await fetch(`${API_BASE}/admin/audit-logs`, {
+                headers: { 'Authorization': `Bearer ${adminToken}` }
+            });
+            const data = await res.json();
+            const tbody = document.getElementById('auditTableBody');
+
+            tbody.innerHTML = data.logs.map(l => `
+                <tr>
+                    <td><small>${l.created_at}</small></td>
+                    <td><span class="badge badge-pop">${l.action}</span></td>
+                    <td>${l.entity}</td>
+                    <td><code>${l.entity_id || 'N/A'}</code></td>
+                    <td>${l.details}</td>
+                </tr>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

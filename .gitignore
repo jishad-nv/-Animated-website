@@ -1,0 +1,19 @@
+# Environment variables
+.env
+.env.local
+
+# SQLite temporary journal files
+*.db-shm
+*.db-wal
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Dependencies
+node_modules/
+npm-debug.log*
+
+# Logs
+*.log
