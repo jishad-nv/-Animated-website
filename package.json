@@ -1,0 +1,27 @@
+{
+  "name": "popcarty",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Pop Carty - Premium Animated E-Commerce Platform",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev:backend": "node --watch backend/server.js",
+    "dev:frontend": "npx serve -s frontend -p 3000",
+    "dev": "node backend/server.js",
+    "build": "echo \"Pop Carty build ready for deployment\"",
+    "migrate": "node backend/migrate_to_postgres.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "pg": "^8.13.3",
+    "sqlite3": "^6.0.1"
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}

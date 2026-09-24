@@ -1,0 +1,48 @@
+# ======================================================================
+# Pop Carty - Render.com Deployment Configuration
+# ======================================================================
+# This file defines how Render should deploy the Pop Carty backend service.
+# 
+# Usage:
+#   1. Push this repo to GitHub
+#   2. Go to https://render.com → New → Blueprint
+#   3. Connect your GitHub repo → Render auto-detects this file
+#   4. Add the required environment variables listed below
+#
+# Required Environment Variables (set in Render dashboard):
+#   DATABASE_URL       - PostgreSQL connection string from Neon/Render/Supabase
+#   JWT_SECRET         - Random 64-char secret (node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
+#   FRONTEND_URL       - Your Vercel frontend URL (e.g. https://your-store.vercel.app)
+#   DEFAULT_ADMIN_EMAIL    - Admin login email
+#   DEFAULT_ADMIN_PASSWORD - Admin login password (min 8 chars)
+# ======================================================================
+
+services:
+  - type: web
+    name: popcarty-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false          # Set this manually in Render dashboard
+      - key: JWT_SECRET
+        generateValue: true  # Render auto-generates a secure random value
+      - key: FRONTEND_URL
+        sync: false          # Set to your Vercel frontend URL
+      - key: DEFAULT_ADMIN_EMAIL
+        value: admin@popcarty.com
+      - key: DEFAULT_ADMIN_PASSWORD
+        sync: false          # Set a strong password in the dashboard
+      - key: PAYMENT_GATEWAY_PROVIDER
+        value: mock_mada
+      - key: MESHY_API_KEY
+        sync: false
+      - key: TRIPO_API_KEY
+        sync: false
